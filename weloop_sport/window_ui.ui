@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>647</width>
+    <height>457</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <property name="windowIcon">
+   <iconset>
+    <normaloff>img/weloop.png</normaloff>img/weloop.png</iconset>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <widget class="QPushButton" name="weloop_daily_data">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>90</y>
+      <width>75</width>
+      <height>51</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>日常数据</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="weloop_outdoor">
+    <property name="geometry">
+     <rect>
+      <x>180</x>
+      <y>90</y>
+      <width>75</width>
+      <height>51</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>室外跑步</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="weloop_cycle">
+    <property name="geometry">
+     <rect>
+      <x>320</x>
+      <y>90</y>
+      <width>75</width>
+      <height>51</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>骑行</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="weloop">
+    <property name="geometry">
+     <rect>
+      <x>250</x>
+      <y>20</y>
+      <width>75</width>
+      <height>51</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>WeLoop</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="coros">
+    <property name="geometry">
+     <rect>
+      <x>250</x>
+      <y>200</y>
+      <width>75</width>
+      <height>51</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>COROS</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="coros_daily">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>290</y>
+      <width>75</width>
+      <height>51</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>日常数据</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="coros_outdoor">
+    <property name="geometry">
+     <rect>
+      <x>140</x>
+      <y>290</y>
+      <width>75</width>
+      <height>51</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>室外跑步</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="coros_cycle">
+    <property name="geometry">
+     <rect>
+      <x>270</x>
+      <y>290</y>
+      <width>75</width>
+      <height>51</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>骑行</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="weloop_swim">
+    <property name="geometry">
+     <rect>
+      <x>450</x>
+      <y>90</y>
+      <width>75</width>
+      <height>51</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>游泳</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="coros_swim">
+    <property name="geometry">
+     <rect>
+      <x>390</x>
+      <y>290</y>
+      <width>75</width>
+      <height>51</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>室内游泳</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="coros_open_swim">
+    <property name="geometry">
+     <rect>
+      <x>530</x>
+      <y>290</y>
+      <width>75</width>
+      <height>51</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>公开水域</string>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

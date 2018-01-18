@@ -1,0 +1,79 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
+	<style type="text/css">
+      body,html,#container{
+        height: 100%;
+        margin: 0px;
+      }
+    </style>
+    <title>折线</title>
+    <link rel="stylesheet" href="http://cache.amap.com/lbs/static/main1119.css"/>
+    <script src="http://webapi.amap.com/maps?v=1.3&key=597cd0e576508fdd279721b56003bb41&plugin=AMap.Autocomplete"></script>
+    <script type="text/javascript" src="http://cache.amap.com/lbs/static/addToolbar.js"></script>
+</head>
+<body>
+<div id="container"></div>
+
+<script>
+    var map = new AMap.Map('container', {
+        resizeEnable: true,
+        center:[113.901539, 22.947868],
+        zoom: 15
+    });
+
+	
+
+    //为地图注册click事件获取鼠标点击出的经纬度坐标
+    var clickEventListener = map.on('click', function(e) {
+        document.getElementById("lnglat").value = e.lnglat.getLng() + ',' + e.lnglat.getLat()
+    });
+    var auto = new AMap.Autocomplete({
+        input: "tipinput"
+    });
+    AMap.event.addListener(auto, "select", select);//注册监听，当选中某条记录时会触发
+    function select(e) {
+        if (e.poi && e.poi.location) {
+            map.setZoom(10);
+            map.setCenter(e.poi.location);
+        }
+    }
+	    var lineArr=None
+	var polyline = new AMap.Polyline({
+        path: lineArr,          //设置线覆盖物路径
+        strokeColor: "#00FFFF", //线颜色
+        strokeOpacity: 1,       //线透明度
+        strokeWeight: 2,        //线宽
+        strokeStyle: "solid",   //线样式
+        strokeDasharray: [10, 5] //补充线样式
+    });
+    polyline.setMap(map);
+	
+	var lineArr1=None
+	var polyline1 = new AMap.Polyline({
+        path: lineArr1,          //设置线覆盖物路径
+        strokeColor: "#FF0000", //线颜色
+        strokeOpacity: 1,       //线透明度
+        strokeWeight: 2,        //线宽
+        strokeStyle: "solid",   //线样式
+        strokeDasharray: [10, 5] //补充线样式
+    });
+    polyline1.setMap(map);
+	
+	var lineArr2=None
+	var polyline2 = new AMap.Polyline({
+        path: lineArr2,          //设置线覆盖物路径
+        strokeColor: "#FF0000", //线颜色
+        strokeOpacity: 1,       //线透明度
+        strokeWeight: 2,        //线宽
+        strokeStyle: "solid",   //线样式
+        strokeDasharray: [10, 5] //补充线样式
+    });
+    polyline2.setMap(map);
+	
+</script>
+</body>
+</html>
