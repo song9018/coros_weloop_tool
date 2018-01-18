@@ -11,7 +11,7 @@ def get_data(iron_group,coros_func,data_dic,second_1,sport_type):
         ori_data_all += coros_func.string_4k(15, 1, 4, num_index, 99 + num_index) + ori_data_list[num_index]
         num_index += 1
     return ori_data_all, utc_second, ori_data_list
-
+"asa"
 def common_get_data(second_0, start_len, Sport_time_set, coros_func, data_dic, sport_type):
     gps = ""
     gps_list,lon_list,lat_list,altitude_list = [],[],[],[]
