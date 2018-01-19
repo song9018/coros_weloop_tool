@@ -18,6 +18,7 @@ open_water_data=""
 cycle_data=""
 run_data=""
 all_str=""
+
 # GPS偏移处理
 def add_gps(list1):
         for i in range(len(list1)):
@@ -123,7 +124,7 @@ class coros_run_data(QtGui.QWidget, run_ui_form):
     @pyqtSlot()
     def on_finish_clicked(self):  # 确认按钮
         self.get_ui_data()
-        self.ori_data_all, self.second_1, self.list_gps= get_data(3,self.coros_func,self.data_dic,self.second_utc,sport_type=0)
+        self.ori_data_all, self.second_utc, self.list_gps= get_data(3,self.coros_func,self.data_dic,self.second_utc,sport_type=0)
         print self.ori_data_all
         run_data=coros_open_water_data.open_water_data+coros_cycle_data.cycle_data+self.ori_data_all
 
@@ -204,6 +205,7 @@ class coros_cycle_data(QtGui.QWidget, cycle_ui_form):
         self.coros_run1.finish.show()
         self.close()
 
+
 class coros_pool_swim_data(QtGui.QWidget, pool_swim_ui_form):
     _translate = QtCore.QCoreApplication.translate
     closeWidget = pyqtSignal()
@@ -239,9 +241,10 @@ class coros_pool_swim_data(QtGui.QWidget, pool_swim_ui_form):
     def on_commit_clicked(self):  # 确认按钮
         # 获取运动界面相关数据
         self.get_ui_data()
-        self.__data, second_1, list_gps =get_data(0,self.coros_func,self.data_dic,self.second_utc,sport_type=3)
+        self.__data, second_utc, ori_list =get_data(0,self.coros_func,self.data_dic,self.second_utc,sport_type=3)
         # 数据展示
         self.data_set.setText(self.__data)
+
 
 class coros_open_water_data(QtGui.QWidget, open_water_ui_form):
     _translate = QtCore.QCoreApplication.translate
@@ -297,7 +300,7 @@ class coros_open_water_data(QtGui.QWidget, open_water_ui_form):
         self.run_map(map_path)  # 加载轨迹地图
 
     @pyqtSlot()
-    def on_open_water_next_clicked(self):  # 验证按钮
+    def on_open_water_next_clicked(self):  # 铁三下一项操作按钮
         self.get_ui_data()
         self.ori_data_all, self.second_utc, self.list_gps=get_data(1,self.coros_func,self.data_dic,self.second_utc,sport_type=2)
         coros_open_water_data.open_water_data=self.ori_data_all
