@@ -1,7 +1,11 @@
 # coding:utf-8
 from weloop_daily.weloop_common import *
 from weloop_daily.yf_time import utc_time
-from struct_head import *
+from coros_struct_head import *
+from operator import add
+import logging
+
+logging.basicConfig(level=logging.INFO) #DEBUG，INFO，WARNING，ERROR
 
 class coros_function(object):
     def __init__(self):
@@ -9,23 +13,26 @@ class coros_function(object):
         self.str = ""
 
     # 4k头设置格式
-
     def string_4k(self, *args):
         str = self.app_bit_tmp(args, self.get_value(record_4k_t))
         str_4k_head = (hex(int(str, 2)).split("0x")[1].split("L")[0])  # 二进制转十进制
-        str_4k_head = rever_bytes("0" * (8 - len(str_4k_head)) + str_4k_head)  # 8字节不足补0
+        str_4k_head = rever_bytes("0" * (8 - len(str_4k_head)) + str_4k_head)  # 4字节不足补0
+        assert len(str_4k_head) == 8, "str_4k_head length error"
+        logging.info(str_4k_head)
         return str_4k_head
 
     def tag_sport_type(self,*args):
         str = self.app_bit_tmp(args, self.get_value(record_sport_info_t))
         tap_sport = (hex(int(str, 2)).split("0x")[1])
-        tap_sport = rever_bytes("0" * (4 - len(tap_sport)) + tap_sport)  # 4字节不足补0
+        tap_sport = rever_bytes("0" * (4 - len(tap_sport)) + tap_sport)  # 2字节不足补0
+        assert len(tap_sport) == 4, "tag_sport_type length error"
         return tap_sport
 
     def gps_head(self, *args):  # gps头：16byte
         str = self.app_bit_tmp(args, self.get_value(record_gps_head_t))
         gps_str = hex(int(str, 2)).split("0x")[1].split("L")[0]
         gps_str = rever_bytes("0" * (32 - len(gps_str)) + gps_str)
+        assert len(gps_str) == 32, "gps_head length error"
         return gps_str
 
     def gps_diff(self, tag, num, lon, lat, gps_lon_sign=0, gps_lat_sign=0):
@@ -38,12 +45,14 @@ class coros_function(object):
         str = self.app_bit_tmp([tag, num, lon, lat, gps_lon_sign, gps_lat_sign], [4, 4, 11, 11])
         gps_str = (hex(int(str, 2)).split("0x")[1])
         gps_str = rever_bytes("0" * (8 - len(gps_str)) + gps_str)
+        assert len(gps_str) == 8, "gps_diff length error"
         return gps_str
 
     def peroid_t(self, *args):
         str = self.app_bit_tmp(args, self.get_value(record_peroid_t))
         tap_peroid = (hex(int(str, 2)).split("0x")[1].split("L")[0])
         tap_peroid = rever_bytes("0" * (6 - len(tap_peroid)) + tap_peroid)
+        assert len(tap_peroid)==6,"peroid_t length error"
         return tap_peroid
 
     def peroid_time_t(self, *args):
@@ -96,6 +105,7 @@ class coros_function(object):
         peroid_str = peroid_str + self.period_bit_to_hex(bit, peroid_1[0], peroid_type)
         peroid_str = (hex(int(peroid_str + zero, 2)).split("0x")[1].split("L")[0])
         peroid_str = ("0" * (data_count * 2 - len(peroid_str)) + peroid_str)
+        assert len(peroid_str) == data_count * 2, "peroid_str length error"
         return peroid_str
 
     def start_time(self, date_time, time_zone, lap_distance_setting, iron_group,
@@ -123,6 +133,7 @@ class coros_function(object):
         str_start = rever_bytes(
             self.app_byte_tmp([r_sec, metric_inch, time_zone, lap_distance_setting, iron_group, reverse],
                               [4, 1, 1, 4, 1, 3]))
+        assert len(str_start) == 28, "str_start length error"
         return str_start, second_0
 
     def stop_time(self, stop_sec):
@@ -149,7 +160,6 @@ class coros_function(object):
     def period_bit_to_hex(self, bit_num, data, peroid_type):
         str_data = ""
         for i in range(len(data)):
-
             if peroid_type == "altitude" and int(data[i]) < 0:
                 new_data = (65535 + int(data[i]))
             elif peroid_type == "speed":
@@ -159,6 +169,7 @@ class coros_function(object):
             else:
                 new_data = int(data[i])
             str_data = str_data + ('{0:0%sb}' % bit_num).format(new_data)
+        assert len(str_data) == bit_num*len(data), "period_bit_to_hex length error"
         return str_data
 
     def get_value(self,dict):
@@ -173,6 +184,7 @@ class coros_function(object):
         while len_bit_list >= 0:
             str += ('{0:0%sb}' % bit_list[len_bit_list]).format(int(value_list[len_bit_list]))
             len_bit_list -= 1
+        assert len(str) == reduce(add,bit_list), "app_bit_tmp length error" #reduce(add,bit_list)/8*2
         return str
 
     def app_byte_tmp(self, value_list, byte_list):
@@ -182,6 +194,7 @@ class coros_function(object):
             byte = '%%0%sx' % (byte_list[len_bit_list] * 2)
             str += byte % int(value_list[len_bit_list])
             len_bit_list -= 1
+        assert len(str) == reduce(add, byte_list)*2, "app_byte_tmp length error"
         return str
 
 

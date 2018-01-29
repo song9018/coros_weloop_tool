@@ -1,6 +1,9 @@
 # coding:utf-8
+import logging
+logging.basicConfig(level=logging.INFO) #DEBUG，INFO，WARNING，ERROR
 
 def get_data(iron_group,coros_func,data_dic,second_1,sport_type):
+    #sport start info:start_head/start_length/start_utc
     start_info, start_info_len, utc_second = normal_start_data(coros_func, data_dic, iron_group,second_1,sport_type)
     ori_data, ori_data_list, start_info_len, utc_second = common_get_data(utc_second, start_info_len,data_dic["Sport_time_set"],coros_func, data_dic, sport_type)
     ori_data_list, utc_second = sport_summary(coros_func, data_dic, sport_type, ori_data, start_info_len,ori_data_list, utc_second, iron_group)
@@ -35,9 +38,9 @@ def common_get_data(second_0, start_len, Sport_time_set, coros_func, data_dic, s
             num_gps += 1
             dur_time -= 1
             num += 1
-            if num_gps % 7 == 0:
+            if num_gps % 7 == 0:  #每7s写入gps_head
                 second_0 += 1
-                if sport_type==3:
+                if sport_type==3:  #泳池游泳忽略gps写入
                     gps_head=""
                     gps_diff_all=""
                 gps, gps_list, start_len = add_4k_end(gps, gps_head + gps_diff_all, start_len, gps_list)
@@ -111,7 +114,7 @@ def sport_summary(coros_func, data_dic, sport_type, gps, start_len, gps_list, se
                                                       data_dic["avg_heart0"], 70, 170, 300, data_dic["elevation0"],
                                                       data_dic["decline0"], 80, data_dic["most_step0"],
                                                       data_dic["most_heart0"], 90,
-                                                     data_dic["most_speed0"], data_dic["avg_speed0"], 0)
+                                                      data_dic["most_speed0"], data_dic["avg_speed0"], 0)
     #游泳模式
     if sport_type == 2 or sport_type == 3:
         sum_info = sum + coros_func.sport_swim_summary(data_dic["distance0"] * 100,
@@ -128,6 +131,7 @@ def sport_summary(coros_func, data_dic, sport_type, gps, start_len, gps_list, se
                                                           data_dic["elevation0"], data_dic["decline0"],
                                                           data_dic["most_step0"], data_dic["most_heart0"], 90,
                                                           data_dic["most_speed0"], data_dic["avg_speed0"], 0)
+
     gps, gps_list, start_len = add_4k_end(gps, sum_info, start_len, gps_list)
 
     # 结束
@@ -144,21 +148,21 @@ def normal_start_data(coros_func, data_dic, iron_group, sec_utc,sport_type):
     interval_list = [5, 5, 1, 1, 60, 2]
     bit_max = [9, 9, 8, 2, 16, 16]
     index_type = [0, 1, 2, 3, 4, 6]
-    if sport_type==2 or sport_type==3:
+    if sport_type==2 or sport_type==3:   #游泳单圈信息单位设置
         around0=data_dic["around0"]*100
     else:
-        around0 = data_dic["around0"]*100000
+        around0 = data_dic["around0"]*100000  #跑步、骑行单圈信息单位设置
     start_time, second_0 = coros_func.start_time(data_dic["Start_time"], data_dic["Time_zone"], around0,
                                                  iron_group, sec_utc)
     start_info0 = coros_func.tag_sport_type(2, 4, sport_type, 0)  # 2:sportinfo_struct ，mtu:4 ,sport_type:0,sport_state：0
-    for i in range(6):
+    for i in range(6): #暂时没有区分每项运动中周期数据是否存在(游泳无计步等)
         peroid_time0 += (coros_func.peroid_t(1, 3, index_type[i],0, 0, bit_max[i])
                          + coros_func.peroid_time_t(second_0 + i, interval_list[i], 0))  # 1:peroid_struct  0:gps
     data = str_4k + start_info0 + start_time + peroid_time0
     return data, len(data)-len(str_4k), second_0
 
 
-#单项运动4k数据不全
+#单项运动4k数据长度补全
 def add_4k_end(gps, lap_info, start_len, gps_list):
     gps_len = gps + lap_info
     if len(gps_len) >= 8184 - start_len:
@@ -169,7 +173,7 @@ def add_4k_end(gps, lap_info, start_len, gps_list):
         gps = gps + lap_info
     return gps, gps_list,start_len
 
-#铁人三项4k数据补全
+#铁人三项4k数据长度补全
 def Triathlon_4k_end(iron_group,gps,gps_list,sport_type,start_len):
     if iron_group != 0 and sport_type!=0:
         if (8184 - len(gps)-start_len) / 120 > 0:

@@ -1,5 +1,5 @@
 # coding:utf-8
-from functions import functions
+from functions import Functions
 from weloop_daily.functions_daily import function
 import sys
 from PyQt4 import QtCore, QtGui, QtWebKit
@@ -71,7 +71,7 @@ class sport_data(QtGui.QWidget, Ui_Form):
         super(sport_data, self).__init__()
         self.setupUi(self)  # 加载窗体
 
-        self.func=functions()  #运动数据functions文件(weloop_sport)
+        self.func=Functions()  #运动数据functions文件(weloop_sport)
         self.func_daily=function()  #日常数据数据functions文件(weloop_daily)
         self.run_map(map_path_none)
         self.gps_data=Lat_Lon()

@@ -2,11 +2,11 @@
 from weloop_daily.yf_time import utc_time
 from weloop_daily.weloop_common import rever_bytes
 
-class functions(object):
+class Functions(object):
     def __init__(self):
         self.yf_time = utc_time()
         self.str=""
-    def start_time(self,date_time,time_zone): #"日期：2017/10/12 09:21:00  时区：32"
+    def start_time(self,date_time,time_zone): #"日期：2017/10/12 09:21:00  时区：8"
         year = int(date_time.split("/")[0])
         mon = int(date_time.split("/")[1])
         day = int(date_time.split("/")[2].split()[0])
@@ -173,7 +173,7 @@ class functions(object):
 
 
 if __name__ == '__main__':
-    func=functions()
+    func=Functions()
     func.step_cadence(285)
 
 

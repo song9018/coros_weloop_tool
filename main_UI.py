@@ -10,6 +10,7 @@ from PyQt4.Qt import *
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
+__author__="chuhua song"
 
 class main_UI(QtGui.QWidget, Ui_MainWindow):
     _translate = QtCore.QCoreApplication.translate
@@ -50,7 +51,7 @@ class main_UI(QtGui.QWidget, Ui_MainWindow):
 
     @pyqtSlot()
     def on_coros_Triathlon_clicked(self):
-        self.coros_open_swim = coros_open_water_data(0)
+        self.coros_open_swim = CorosOpenWater(0)
         self.coros_open_swim.setWindowTitle(u"coros铁人三项--公开水域")
         self.coros_open_swim.commit.hide()
         self.coros_open_swim.open_water_next.show()
@@ -58,25 +59,25 @@ class main_UI(QtGui.QWidget, Ui_MainWindow):
 
     @pyqtSlot()
     def on_coros_outdoor_clicked(self):
-        self.coros_outdoor = coros_run_data(0)
+        self.coros_outdoor = CorosRun(0)
         self.coros_outdoor.setWindowTitle(u"coros跑步数据")
         self.coros_outdoor.show()
 
     @pyqtSlot()
     def on_coros_cycle_clicked(self):
-        self.coros_cycle = coros_cycle_data(0)
+        self.coros_cycle = CorosCycle(0)
         self.coros_cycle.setWindowTitle(u"coros骑行数据")
         self.coros_cycle.show()
 
     @pyqtSlot()
     def on_coros_swim_clicked(self):
-        self.coros_swim = coros_pool_swim_data(0)
+        self.coros_swim = CorosPoolSwim(0)
         self.coros_swim.setWindowTitle(u"coros游泳数据")
         self.coros_swim.show()
 
     @pyqtSlot()
     def on_coros_open_swim_clicked(self):
-        self.coros_open_swim = coros_open_water_data(0)
+        self.coros_open_swim = CorosOpenWater(0)
         self.coros_open_swim.setWindowTitle(u"coros公开水域")
         self.coros_open_swim.show()
 
