@@ -9,6 +9,7 @@ from coros_open_water_set import Ui_Form as open_water_ui_form
 from coros_data_show import Ui_Form as data_show_ui_form
 from coros_functions import coros_function
 from coros_sport_common import *
+from pace_sport_main import decode_sport_data
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
@@ -19,48 +20,30 @@ cycle_data=""
 run_data=""
 all_str=""
 
-# GPS偏移处理
-def add_gps(list1):
-        for i in range(len(list1)):
-            list1[i][0] = list1[i][0] + 0.004843
-            list1[i][1] = list1[i][1] - 0.002995
-        return list1
-
 #经纬度数据写入html文件
 class Lat_Lon(object):
-    #list格式：[[[113.12122,23.12131,0],[113.12122,23.12131,0]]]
-    def write_lat_lon(self, file_name, list=None, list1=None, list2=None, list3=None): 
-        if len(list) == 1:
-            list1 = list[0]
-        elif len(list) == 2:
-            list1 = list[0]
-            list2 = list[1]
-        elif len(list) == 3:
-            list1 = list[0]
-            list2 = list[1]
-            list3 = list[2]
+    #list格式：[[113.12122,23.12131,0],[113.12122,23.12131,0]]
+    @classmethod
+    def write_lat_lon(self, file_name, list):
+        # GPS偏移处理
+        for i in range(len(list)):
+            list[i][0] = list[i][0] + 0.004843
+            list[i][1] = list[i][1] - 0.002995
 
-        file = open(file_name, 'r')
-        lines = file.readlines()
-        len_t = len(lines) - 1
-
+        with open(file_name, 'r') as fp:
+            lines=fp.readlines()
+            len_t = len(lines) - 1
         for i in range(len_t):
             # 地图中心点设置
             if "center" in lines[i]:
                 data = lines[i].split(':')[1]
-                lines[i] = lines[i].replace(data, str(list1[0]) + ",\n")
+                lines[i] = lines[i].replace(data, str(list[0]) + ",\n")
             if 'var lineArr' in lines[i]:
                 data = lines[i].split('=')[1]
-                lines[i] = lines[i].replace(data, str(list1) + "\n")
-            if 'var lineArr1' in lines[i]:
-                data = lines[i].split('=')[1]
-                lines[i] = lines[i].replace(data, str(list2) + "\n")
-            if 'var lineArr2' in lines[i]:
-                data = lines[i].split('=')[1]
-                lines[i] = lines[i].replace(data, str(list3) + "\n")
-        file = open(file_name, 'w')
-        file.writelines(lines)
-        file.close()
+                lines[i] = lines[i].replace(data, str(list) + "\n")
+        with open(file_name, 'w') as fp:
+            fp.writelines(lines)
+
 
 #pyqt加载浏览器
 class BrowserScreen(QtWebKit.QWebView):
@@ -79,7 +62,7 @@ class CorosRun(QtGui.QWidget, run_ui_form):
         super(CorosRun, self).__init__()
         self.setupUi(self)  # 加载窗体
         self.finish.hide()
-        self.gps_data = Lat_Lon()
+        #self.gps_data = Lat_Lon()
         self.coros_func=coros_function()
         self.second_utc=second_utc
         self.data_dic={}
@@ -119,6 +102,7 @@ class CorosRun(QtGui.QWidget, run_ui_form):
         self.run_ui = ShowData()
         self.run_ui.show()
         self.run_ui.sport_data.setText(self.__data)
+        Lat_Lon.write_lat_lon(map_path,decode_sport_data(self.__data,"run"))
         self.run_map(map_path)  # 加载轨迹地图
 
     @pyqtSlot()
@@ -189,7 +173,7 @@ class CorosCycle(QtGui.QWidget, cycle_ui_form):
         self.cycle_ui = ShowData()
         self.cycle_ui.show()
         self.cycle_ui.sport_data.setText(self.__data)
-
+        Lat_Lon.write_lat_lon(map_path, decode_sport_data(self.__data, "cycle"))
         self.run_map(map_path)  # 加载轨迹地图
 
     @pyqtSlot()
@@ -244,7 +228,7 @@ class CorosPoolSwim(QtGui.QWidget, pool_swim_ui_form):
         self.__data, second_utc, ori_list =get_data(0,self.coros_func,self.data_dic,self.second_utc,sport_type=3)
         # 数据展示
         self.data_set.setText(self.__data)
-
+        decode_sport_data(self.__data, "poolswim")
 
 class CorosOpenWater(QtGui.QWidget, open_water_ui_form):
     _translate = QtCore.QCoreApplication.translate
@@ -297,6 +281,7 @@ class CorosOpenWater(QtGui.QWidget, open_water_ui_form):
         self.open_water_ui = ShowData()
         self.open_water_ui.show()
         self.open_water_ui.sport_data.setText(self.__data)
+        Lat_Lon.write_lat_lon(map_path, decode_sport_data(self.__data, "openwater"))
         self.run_map(map_path)  # 加载轨迹地图
 
     @pyqtSlot()

@@ -18,7 +18,7 @@ class coros_function(object):
         str_4k_head = (hex(int(str, 2)).split("0x")[1].split("L")[0])  # 二进制转十进制
         str_4k_head = rever_bytes("0" * (8 - len(str_4k_head)) + str_4k_head)  # 4字节不足补0
         assert len(str_4k_head) == 8, "str_4k_head length error"
-        logging.info(str_4k_head)
+        #logging.info(str_4k_head)
         return str_4k_head
 
     def tag_sport_type(self,*args):
@@ -42,7 +42,7 @@ class coros_function(object):
         if lat < 0:
             lat = abs(lat)
             gps_lat_sign = 1
-        str = self.app_bit_tmp([tag, num, lon, lat, gps_lon_sign, gps_lat_sign], [4, 4, 11, 11])
+        str = self.app_bit_tmp([tag, num, gps_lon_sign,lon,gps_lat_sign, lat], self.get_value(record_gps_diff_t))
         gps_str = (hex(int(str, 2)).split("0x")[1])
         gps_str = rever_bytes("0" * (8 - len(gps_str)) + gps_str)
         assert len(gps_str) == 8, "gps_diff length error"
@@ -94,11 +94,9 @@ class coros_function(object):
                 peroid_1.append(peroid_0)
                 cadence_0 = []
                 break
+            if index > len(peroid_list): index = 0  # 循环获取
 
-            if index > len(peroid_list):  # 循环获取
-                index = 0
         if peroid_0 != []:
-
             while len(cadence_0) < number:  # 不够--存0
                 cadence_0.append(0)
                 peroid_1.append(cadence_0)
@@ -119,10 +117,8 @@ class coros_function(object):
         metric_inch = 0
         reverse = 0
 
-        if time_zone < 0:
-            time_zone = 256 - abs(int(time_zone)) * 4  # 解决负时区问题
-        else:
-            time_zone = abs(int(time_zone)) * 4
+        if time_zone < 0:time_zone = 256 - abs(int(time_zone)) * 4  # 解决负时区问题
+        else:time_zone = abs(int(time_zone)) * 4
         if iron_group == 0:
             r_sec = self.yf_time.utc_to_seconds(year - 2000, mon, day, hour, min, sec)  # 十六进制时间戳
             second_0 = self.yf_time.utc_to_seconds(year - 2000, mon, day, hour, min, sec)
@@ -130,9 +126,7 @@ class coros_function(object):
             r_sec = sec_utc
             second_0 = sec_utc
 
-        str_start = rever_bytes(
-            self.app_byte_tmp([r_sec, metric_inch, time_zone, lap_distance_setting, iron_group, reverse],
-                              [4, 1, 1, 4, 1, 3]))
+        str_start = rever_bytes(self.app_byte_tmp([r_sec, metric_inch, time_zone, lap_distance_setting, iron_group, reverse],[4, 1, 1, 4, 1, 3]))
         assert len(str_start) == 28, "str_start length error"
         return str_start, second_0
 
@@ -160,14 +154,11 @@ class coros_function(object):
     def period_bit_to_hex(self, bit_num, data, peroid_type):
         str_data = ""
         for i in range(len(data)):
-            if peroid_type == "altitude" and int(data[i]) < 0:
-                new_data = (65535 + int(data[i]))
-            elif peroid_type == "speed":
-                new_data = int(float(data[i]) * 100)
-            elif peroid_type == "open_swim_pace":
-                new_data = int(float(data[i]) * 100)
-            else:
-                new_data = int(data[i])
+            if peroid_type == "altitude" and int(data[i]) < 0 : new_data = (65535 + int(data[i]))
+            elif peroid_type == "speed" : new_data = int(float(data[i]) * 100)
+            elif peroid_type == "open_swim_pace" : new_data = int(float(data[i]) * 100)
+            else: new_data = int(data[i])
+
             str_data = str_data + ('{0:0%sb}' % bit_num).format(new_data)
         assert len(str_data) == bit_num*len(data), "period_bit_to_hex length error"
         return str_data

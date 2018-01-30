@@ -3,7 +3,7 @@
 
 
 TAG = {
-        0: 'gps_struct', 
+        0: 'gps_info_struct',
         1: 'peroid_struct', 
         2: 'sportinfo_struct',
         14: 'RECORD_SPORT_TAG_IDLE', 

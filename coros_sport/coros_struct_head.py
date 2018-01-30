@@ -1,4 +1,5 @@
 # coding:utf-8
+from collections import OrderedDict
 
 record_4k_t = {
     "a_tag": 4,  # tag = 0xF
@@ -6,7 +7,12 @@ record_4k_t = {
     "c_mtu": 6,  # 存储单元大小 recordsize = mtu * num,
     "d_blockid": 10,  # 块ID
     "e_checksum": 8,  # 标记校验
-}  # 每4K的块标记
+} # 每4K的块标记
+
+record_gps_info_t = {
+    "a_tag": 4,
+    "b_num": 4,
+}  # 1byte
 
 record_gps_head_t = {
     "a_tag": 4,
@@ -97,6 +103,15 @@ sport_stop_info_t = {
     "c_reverse": 9,  # 保留
 }  # 14+2
 
+sport_pause_info_t = {
+    "a_pause_utc": 4,  # 暂停运动间戳
+    "b_reverse": 10  # 保留
+}
+
+sport_resume_info_t = {
+    "a_resume_utc": 4,  # 恢复运动间戳
+    "b_reverse": 10  # 保留
+}
 lap_run_info_t = {
     "a_current_utc": 4,  # 单圈记录时间戳
     "b_lap_index": 1,  # 单圈序号

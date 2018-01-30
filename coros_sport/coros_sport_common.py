@@ -33,6 +33,7 @@ def common_get_data(second_0, start_len, Sport_time_set, coros_func, data_dic, s
         gps_diff_all = ""
         for j in range(len(lon_list)):
             gps_diff = coros_func.gps_diff(0, 1, lon_list[num_gps + 1] - lon_list[num_gps],lat_list[num_gps + 1] - lat_list[num_gps])
+
             gps_diff_all = gps_diff_all + gps_diff
             second_0 += 1
             num_gps += 1
