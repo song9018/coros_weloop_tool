@@ -11,7 +11,8 @@ def get_data(iron_group,coros_func,data_dic,second_1,sport_type):
     ori_data_all = start_info + ori_data_list[0]
     num_index = 1
     while num_index < len(ori_data_list):
-        ori_data_all += coros_func.string_4k(15, 1, 4, num_index, 99 + num_index) + ori_data_list[num_index]
+        check_sum=coros_func.check_sum(15, 1, 4, num_index, 99)
+        ori_data_all += coros_func.string_4k(15, 1, 4, num_index, check_sum) + ori_data_list[num_index]
         num_index += 1
     return ori_data_all, utc_second, ori_data_list
 
@@ -58,14 +59,18 @@ def common_get_data(second_0, start_len, Sport_time_set, coros_func, data_dic, s
                         "f_value_valid_num": 7,  # value_tag=0":数据最大位数  value_tag=1":周期数据有效个数
                     }  # 结构体数据存储的大小为num*mtu
                     """
+                    speed=""
                     heart = coros_func.peroid_t(1, 8, 2, 0, 1, 29) + coros_func.heart(29, num_heart, "heart")
-                    speed = coros_func.peroid_t(1, 8, 6, 0, 1, 14) + coros_func.pace(14, num_pace, "speed")
+                    if sport_type!=3:
+                        speed = coros_func.peroid_t(1, 8, 6, 0, 1, 14) + coros_func.pace(14, num_pace, "speed")
                     gps, gps_list, start_len = add_4k_end(gps, heart + speed, start_len, gps_list)
 
                 #5s存储一个值，55s存储一组数据
                 if num % 56 == 0:
-                    step = coros_func.peroid_t(1, 4, 0, 0, 1, 11) + coros_func.step_cadence(11, num_step,"step")
-                    step_len = coros_func.peroid_t(1, 4, 1, 0, 1, 11) + coros_func.step_len(11, num_step_len,"step_len")
+                    step,step_len="",""
+                    if sport_type != 3 and sport_type != 4:
+                        step = coros_func.peroid_t(1, 4, 0, 0, 1, 11) + coros_func.step_cadence(11, num_step,"step")
+                        step_len = coros_func.peroid_t(1, 4, 1, 0, 1, 11) + coros_func.step_len(11, num_step_len,"step_len")
                     altitude = coros_func.peroid_t(1, 8, 5, 0, 1, 14) + coros_func.altitude(14, num_altitude,"altitude")
                     gps, gps_list, start_len = add_4k_end(gps, step + step_len + altitude, start_len, gps_list)
 
@@ -144,7 +149,7 @@ def sport_summary(coros_func, data_dic, sport_type, gps, start_len, gps_list, se
 
 #运动开始信息
 def normal_start_data(coros_func, data_dic, iron_group, sec_utc,sport_type):
-    str_4k = coros_func.string_4k(15, 1, 4, 0, 99)
+    str_4k = coros_func.string_4k(15, 1, 4, 0, 35)
     peroid_time0 = ""
     interval_list = [5, 5, 1, 1, 60, 2]
     bit_max = [9, 9, 8, 2, 16, 16]
