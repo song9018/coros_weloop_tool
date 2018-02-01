@@ -4,7 +4,7 @@ from weloop_sport.sport_main import sport_data
 from coros_sport.coros_sport_main import *
 from window_ui import Ui_MainWindow
 from PyQt4 import QtCore, QtGui
-import sys
+import sys,os,glob
 from PyQt4.Qt import *
 
 reload(sys)
@@ -82,8 +82,10 @@ class main_UI(QtGui.QWidget, Ui_MainWindow):
         self.coros_open_swim.show()
 
 
-#
 if __name__ == '__main__':
+    for i in range(len(glob.glob("./result/*"))):
+        os.remove(glob.glob("./result/*")[i])
+
     app = QApplication(sys.argv)
     ui = main_UI()
     ui.setWindowTitle(u"设备数据仿真工具")

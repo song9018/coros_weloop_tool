@@ -196,8 +196,6 @@ class sport_data(QtGui.QWidget, Ui_Form):
                 gps_diff_all=gps_diff_all+gps_diff
                 time_seconds+=num_gps
 
-                num_gps+=1
-                dur_time -= 1
                 num_heart += 1
                 speed_index += 1
                 if speed_index > len(speed_list) - 2:  #循环写入速度值数据
@@ -219,6 +217,8 @@ class sport_data(QtGui.QWidget, Ui_Form):
                     #break
             #if num_gps==len(lon_list)-1: #gps轨迹数据写完循环写入
                 #break
+                num_gps += 1
+                dur_time -= 1
                 
         if self.heart_checked == 2:
             if num_heart%280!=0:     #每七组gps数据写入一组心率、可信度

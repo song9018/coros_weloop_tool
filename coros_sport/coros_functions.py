@@ -20,7 +20,7 @@ class coros_function(object):
         assert len(str_4k_head) == 8, "str_4k_head length error"
         return str_4k_head
 
-    #check_sum
+    #check_sum:4k头前三个字节和
     def check_sum(self, *args):
         str_4k_head=self.string_4k(*args)
         logging.info(str_4k_head)
@@ -112,8 +112,7 @@ class coros_function(object):
         assert len(peroid_str) == data_count * 2, "peroid_str length error"
         return peroid_str
 
-    def start_time(self, date_time, time_zone, lap_distance_setting, iron_group,
-                   sec_utc):  # "日期：2017/10/12 09:21:00  时区：32"
+    def start_time(self, date_time, time_zone, lap_distance_setting, iron_group,sec_utc):  # "日期：2017/10/12 09:21:00  时区：32"
         year = int(date_time.split("/")[0])
         mon = int(date_time.split("/")[1])
         day = int(date_time.split("/")[2].split()[0])
@@ -132,7 +131,7 @@ class coros_function(object):
             r_sec = sec_utc
             second_0 = sec_utc
 
-        str_start = rever_bytes(self.app_byte_tmp([r_sec, metric_inch, time_zone, lap_distance_setting, iron_group, reverse],[4, 1, 1, 4, 1, 3]))
+        str_start = rever_bytes(self.app_byte_tmp([r_sec, metric_inch, time_zone, lap_distance_setting, iron_group, reverse],self.get_value(sport_start_info_t)))
         assert len(str_start) == 28, "str_start length error"
         return str_start, second_0
 
