@@ -57,6 +57,7 @@ def read_sport_data(pstr, mtu, gps_file, sport_file):
 
         ppstr = pstr[i:i + size * 2]
         i += size * 2
+        #print ppstr,mtu * num * 2
         assert len(ppstr) == mtu * num * 2
         getattr(SPORT, TAG[tag])(ppstr)
 

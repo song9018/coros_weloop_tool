@@ -5,7 +5,7 @@ from coros_struct_head import *
 from operator import add
 import logging
 
-logging.basicConfig(level=logging.INFO) #DEBUG，INFO，WARNING，ERROR
+logging.basicConfig(level=logging.ERROR) #DEBUG，INFO，WARNING，ERROR
 
 class coros_function(object):
     def __init__(self):
@@ -16,15 +16,14 @@ class coros_function(object):
     def string_4k(self, *args):
         str = self.app_bit_tmp(args, self.get_value(record_4k_t))
         str_4k_head = (hex(int(str, 2)).split("0x")[1].split("L")[0])  # 二进制转十进制
-        logging.info(str_4k_head)
         str_4k_head = rever_bytes("0" * (8 - len(str_4k_head)) + str_4k_head)  # 4字节不足补0
         assert len(str_4k_head) == 8, "str_4k_head length error"
         return str_4k_head
+
     #check_sum
     def check_sum(self, *args):
-        str = self.app_bit_tmp(args, self.get_value(record_4k_t))
-        str_4k_head = (hex(int(str, 2)).split("0x")[1].split("L")[0])  # 二进制转十进制
-        str_4k_head = rever_bytes("0" * (8 - len(str_4k_head)) + str_4k_head)  # 4字节不足补0
+        str_4k_head=self.string_4k(*args)
+        logging.info(str_4k_head)
         check_sum=int("0x"+str_4k_head[0:2],16)+int("0x"+str_4k_head[2:4],16)+int("0x"+str_4k_head[4:6],16)
         return check_sum
 

@@ -109,14 +109,14 @@ class CorosRun(QtGui.QWidget, run_ui_form):
     def on_finish_clicked(self):  # 确认按钮
         self.get_ui_data()
         self.ori_data_all, self.second_utc, self.list_gps= get_data(3,self.coros_func,self.data_dic,self.second_utc,sport_type=0)
-        logging.info(self.ori_data_all)
+        #logging.info(self.ori_data_all)
         run_data= CorosOpenWater.open_water_data + CorosCycle.cycle_data + self.ori_data_all
 
         # 数据展示
         self.run_ui = ShowData()
         self.run_ui.show()
         self.run_ui.sport_data.setText(run_data)
-
+        Lat_Lon.write_lat_lon(map_path, decode_sport_data(run_data, "Triathlon"))
         self.run_map(map_path)  # 加载轨迹地图
         self.close()
 
@@ -181,7 +181,7 @@ class CorosCycle(QtGui.QWidget, cycle_ui_form):
         self.get_ui_data()
         self.ori_data_all, self.second_1, self.list_gps= get_data(2,self.coros_func,self.data_dic,self.second_utc,sport_type=4)
         CorosCycle.cycle_data =self.ori_data_all
-        logging.info(self.ori_data_all)
+        #logging.info(self.ori_data_all)
         self.coros_run1 = CorosRun(self.second_1 + 5)
         self.coros_run1.setWindowTitle(u"coros铁人三项--跑步数据")
         self.coros_run1.show()
@@ -289,7 +289,7 @@ class CorosOpenWater(QtGui.QWidget, open_water_ui_form):
         self.get_ui_data()
         self.ori_data_all, self.second_utc, self.list_gps=get_data(1,self.coros_func,self.data_dic,self.second_utc,sport_type=2)
         CorosOpenWater.open_water_data=self.ori_data_all
-        logging.info(self.ori_data_all)
+        #logging.info(self.ori_data_all)
         self.coros_cycle1=CorosCycle(self.second_utc + 5)
         self.coros_cycle1.setWindowTitle(u"coros铁人三项--骑行数据")
         self.coros_cycle1.show()

@@ -4,7 +4,7 @@ from pace_function_struct import *
 from yf_time import *
 from coros_struct_head import *
 import logging
-logging.basicConfig(level=logging.INFO) #debug，info，warning，error
+logging.basicConfig(level=logging.ERROR) #DEBUG，info，warning，ERROR
 
 # dubug打印信息
 def print_pace_info(func):
@@ -72,6 +72,7 @@ class sport_struct(object):
         (self.__tag, self.__num, self.__peroid_type, self.__value_reserve, self.__value_tag,
          self.value_valid_num) = app_bitmap_read_bit(pstr, get_value(record_peroid_t))
         self._data = pstr[6:]
+
 
         #
         # self.__tag # 记录标签  -----小端存储

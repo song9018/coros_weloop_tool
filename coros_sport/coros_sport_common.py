@@ -1,6 +1,7 @@
 # coding:utf-8
 import logging
-logging.basicConfig(level=logging.INFO) #DEBUG，INFO，WARNING，ERROR
+logging.basicConfig(level=logging.ERROR) #DEBUG，INFO，WARNING，ERROR
+
 
 def get_data(iron_group,coros_func,data_dic,second_1,sport_type):
     #sport start info:start_head/start_length/start_utc
@@ -15,6 +16,7 @@ def get_data(iron_group,coros_func,data_dic,second_1,sport_type):
         ori_data_all += coros_func.string_4k(15, 1, 4, num_index, check_sum) + ori_data_list[num_index]
         num_index += 1
     return ori_data_all, utc_second, ori_data_list
+
 
 def common_get_data(second_0, start_len, Sport_time_set, coros_func, data_dic, sport_type):
     gps = ""
@@ -38,8 +40,9 @@ def common_get_data(second_0, start_len, Sport_time_set, coros_func, data_dic, s
             gps_diff_all = gps_diff_all + gps_diff
             second_0 += 1
             num_gps += 1
-            dur_time -= 1
-            num += 1
+
+            if dur_time <= 0:
+                break
             if num_gps % 7 == 0:  #每7s写入gps_head
                 second_0 += 1
                 if sport_type==3:  #泳池游泳忽略gps写入
@@ -62,6 +65,7 @@ def common_get_data(second_0, start_len, Sport_time_set, coros_func, data_dic, s
                     speed=""
                     heart = coros_func.peroid_t(1, 8, 2, 0, 1, 29) + coros_func.heart(29, num_heart, "heart")
                     if sport_type!=3:
+                        #speed 2s出值
                         speed = coros_func.peroid_t(1, 8, 6, 0, 1, 14) + coros_func.pace(14, num_pace, "speed")
                     gps, gps_list, start_len = add_4k_end(gps, heart + speed, start_len, gps_list)
 
@@ -88,11 +92,14 @@ def common_get_data(second_0, start_len, Sport_time_set, coros_func, data_dic, s
                 lat_list.reverse()
                 altitude_list.reverse()
                 num_gps = 0
+            dur_time -= 1
+            num += 1
+
         gps, gps_list, start_len, num_lap = sport_lap(num, data_dic, coros_func, num_lap, second_0, gps, gps_list,start_len, sport_type)
     return gps, gps_list, start_len, second_0
 
 def sport_lap(num, data_dic, coros_func, num_lap, second_0, gps, gps_list, start_len, sport_type):
-
+    lap_info=""
     if num % ((int(data_dic["Sport_time_set"]) * 60) / int((data_dic["distance0"] / data_dic["around0"]))) < 8:
         around = coros_func.tag_sport_type(2, 9, sport_type, 4)  # 2:sportinfo_struct ，mtu:4 ,sport_type:0,sport_state：0
         num_lap += 1
@@ -108,10 +115,11 @@ def sport_lap(num, data_dic, coros_func, num_lap, second_0, gps, gps_list, start
         gps, gps_list, start_len=add_4k_end(gps, lap_info, start_len, gps_list)
     return gps, gps_list, start_len, num_lap
 
+
 #运动概要数据
 def sport_summary(coros_func, data_dic, sport_type, gps, start_len, gps_list, second_0, iron_group):
-
     sum = coros_func.tag_sport_type(2, 12, sport_type, 5)
+    sum_info=""
     #室外跑步
     if sport_type == 0:
         sum_info = sum + coros_func.sport_run_summary(data_dic["distance0"] * 100000, data_dic["Sport_time_set"] * 60,
@@ -147,6 +155,7 @@ def sport_summary(coros_func, data_dic, sport_type, gps, start_len, gps_list, se
     gps_list=Triathlon_4k_end(iron_group,gps,gps_list,sport_type,start_len)
     return gps_list, second_0
 
+
 #运动开始信息
 def normal_start_data(coros_func, data_dic, iron_group, sec_utc,sport_type):
     str_4k = coros_func.string_4k(15, 1, 4, 0, 35)
@@ -154,12 +163,12 @@ def normal_start_data(coros_func, data_dic, iron_group, sec_utc,sport_type):
     interval_list = [5, 5, 1, 1, 60, 2]
     bit_max = [9, 9, 8, 2, 16, 16]
     index_type = [0, 1, 2, 3, 4, 6]
-    if sport_type==2 or sport_type==3:   #游泳单圈信息单位设置
-        around0=data_dic["around0"]*100
+    if sport_type==2 or sport_type==3:
+        around0=data_dic["around0"]*100 #游泳单圈信息单位设置
     else:
         around0 = data_dic["around0"]*100000  #跑步、骑行单圈信息单位设置
-    start_time, second_0 = coros_func.start_time(data_dic["Start_time"], data_dic["Time_zone"], around0,
-                                                 iron_group, sec_utc)
+    start_time, second_0 = coros_func.start_time(data_dic["Start_time"], data_dic["Time_zone"], around0,iron_group, sec_utc)
+
     start_info0 = coros_func.tag_sport_type(2, 4, sport_type, 0)  # 2:sportinfo_struct ，mtu:4 ,sport_type:0,sport_state：0
     for i in range(6): #暂时没有区分每项运动中周期数据是否存在(游泳无计步等)
         peroid_time0 += (coros_func.peroid_t(1, 3, index_type[i],0, 0, bit_max[i])
@@ -172,23 +181,33 @@ def normal_start_data(coros_func, data_dic, iron_group, sec_utc,sport_type):
 def add_4k_end(gps, lap_info, start_len, gps_list):
     gps_len = gps + lap_info
     if len(gps_len) >= 8184 - start_len:
-        gps_list.append(gps + "%sf" % ((8184 - start_len - len(gps)) / 8) + (8182 - start_len - len(gps)) * "f")
+        gps_list = none_4k_get(gps, start_len, gps_list)
         gps = lap_info
         start_len = 0
     else:
         gps = gps + lap_info
     return gps, gps_list,start_len
 
+
 #铁人三项4k数据长度补全
 def Triathlon_4k_end(iron_group,gps,gps_list,sport_type,start_len):
     if iron_group != 0 and sport_type!=0:
-        if (8184 - len(gps)-start_len) / 120 > 0:
-            for i in range(int((8184 - len(gps)-start_len) / 120)):  #铁三单项运动结束时填充无效数据(4k)，减少工作量
-                gps = gps + "f" * 120
-            gps_list.append(gps + "%sf" % ('%01x' % (((8184 - len(gps)-start_len) % 120) / 8)) + (((8184 - len(gps)-start_len) % 120 - 2) * "f"))
-        else:
-            gps_list.append(gps + "%sf" % ((8184 - (8184 - len(gps)-start_len)) / 8) + (8182 - (8184 - len(gps)-start_len)) * "f")
-
+        gps_list=none_4k_get(gps,start_len,gps_list)
     else:
-        gps_list.append(gps) #解决单项运动最后一段数据小于4k时被丢弃的问题
+        gps_list.append(gps)  #解决单项运动最后一段数据小于4k时被丢弃的问题
+    return gps_list
+
+
+# 运动结束时填充无效数据(4k补全)，减少工作量
+def none_4k_get(gps,start_len,gps_list):
+    if (8184 - len(gps) - start_len) / 120 > 0:
+        for i in range(int((8184 - len(gps) - start_len) / 120)):
+            gps = gps + "f" * 120
+        if (8184 - len(gps) - start_len) % 120 != 0:
+            gps_list.append(
+                gps + "%sf" % ('%01x' % (((8184 - len(gps) - start_len) % 120) / 8)) + (((8184 - len(gps) - start_len) % 120 - 2) *"f"))
+    else:
+        if (8184 - len(gps) - start_len) % 120 != 0:
+            gps_list.append(
+                gps + "%sf" % ('%01x' % ((8184 - len(gps) - start_len) / 8)) + ((8182 - len(gps) - start_len) * "f"))
     return gps_list
