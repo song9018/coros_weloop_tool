@@ -125,7 +125,7 @@ def sport_summary(coros_func, data_dic, sport_type, gps, start_len, gps_list, se
         sum_info = sum + coros_func.sport_run_summary(data_dic["distance0"] * 100000, data_dic["Sport_time_set"] * 60,
                                                       data_dic["distance0"] / data_dic["around0"],
                                                       data_dic["kcal0"] * 1000,
-                                                      data_dic["avg_heart0"], 180, 500, 300, data_dic["elevation0"],
+                                                      data_dic["avg_heart0"], 180,180, 500, data_dic["elevation0"],
                                                       data_dic["decline0"], 80, data_dic["most_step0"],
                                                       data_dic["most_heart0"], 120,
                                                       data_dic["most_speed0"], data_dic["avg_speed0"], 0)

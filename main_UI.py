@@ -6,11 +6,15 @@ from window_ui import Ui_MainWindow
 from PyQt4 import QtCore, QtGui
 import sys,os,glob
 from PyQt4.Qt import *
-
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
 __author__="chuhua song"
+
+file_list=glob.glob("./result/*")
+if file_list!=[]:
+    for i in range(len(file_list)):
+        os.remove(file_list[i])
 
 class main_UI(QtGui.QWidget, Ui_MainWindow):
     _translate = QtCore.QCoreApplication.translate
@@ -83,9 +87,6 @@ class main_UI(QtGui.QWidget, Ui_MainWindow):
 
 
 if __name__ == '__main__':
-    for i in range(len(glob.glob("./result/*"))):
-        os.remove(glob.glob("./result/*")[i])
-
     app = QApplication(sys.argv)
     ui = main_UI()
     ui.setWindowTitle(u"设备数据仿真工具")

@@ -20,9 +20,9 @@ cycle_data=""
 run_data=""
 all_str=""
 
+
 #经纬度数据写入html文件
-class Lat_Lon(object):
-    #list格式：[[113.12122,23.12131,0],[113.12122,23.12131,0]]
+class Lat_Lon(object): #list格式：[[113.12122,23.12131,0],[113.12122,23.12131,0]]
     @classmethod
     def write_lat_lon(self, file_name, list):
         # GPS偏移处理
@@ -44,6 +44,14 @@ class Lat_Lon(object):
         with open(file_name, 'w') as fp:
             fp.writelines(lines)
 
+    # 加载地图
+    @classmethod
+    def run_map(self,file_name,run_ui):
+        sc = BrowserScreen(file_name)
+        graphicscene = QGraphicsScene()
+        graphicscene.addWidget(sc)
+        run_ui.graphicsView.setScene(graphicscene)
+        run_ui.graphicsView.show()
 
 #pyqt加载浏览器
 class BrowserScreen(QtWebKit.QWebView):
@@ -103,7 +111,8 @@ class CorosRun(QtGui.QWidget, run_ui_form):
         self.run_ui.show()
         self.run_ui.sport_data.setText(self.__data)
         Lat_Lon.write_lat_lon(map_path,decode_sport_data(self.__data,"run"))
-        self.run_map(map_path)  # 加载轨迹地图
+        Lat_Lon.run_map(map_path,self.run_ui)
+        #self.run_map(map_path)  # 加载轨迹地图
 
     @pyqtSlot()
     def on_finish_clicked(self):  # 确认按钮
