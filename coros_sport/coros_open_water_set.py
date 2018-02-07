@@ -72,6 +72,8 @@ class Ui_Form(object):
         self.sport_time.setFont(font)
         self.sport_time.setText(QtGui.QApplication.translate("Form", "运动时长", None, QtGui.QApplication.UnicodeUTF8))
         self.sport_time.setObjectName(_fromUtf8("sport_time"))
+
+
         self.sport_time_3 = QtGui.QLabel(Form)
         self.sport_time_3.setGeometry(QtCore.QRect(70, 300, 41, 21))
         font = QtGui.QFont()
