@@ -92,25 +92,26 @@ class coros_function(object):
         zero = "0" * (data_count * 8 - (number * bit))
 
         peroid_0 = []
-        peroid_1 = []
+        #peroid_1 = []
         for i in range(num):
+            if i == number-1:  # number个值存一组
+                # peroid_1.append(peroid_0)
+                # cadence_0 = []
+                break
+            if index >= len(peroid_list):
+                index = 0  # 循环获取
+
             peroid_0.append(peroid_list[index])
             index += 1
-            if index == number:  # number个值存一组
-                peroid_1.append(peroid_0)
-                cadence_0 = []
-                break
-            if index > len(peroid_list): index = 0  # 循环获取
-
-        if peroid_0 != []:
-            while len(cadence_0) < number:  # 不够--存0
-                cadence_0.append(0)
-                peroid_1.append(cadence_0)
-        peroid_str = peroid_str + self.period_bit_to_hex(bit, peroid_1[0], peroid_type)
+        # if peroid_0 != []:
+        #     while len(cadence_0) < number:  # 不够--存0
+        #         cadence_0.append(0)
+        #         peroid_1.append(cadence_0)
+        peroid_str = peroid_str + self.period_bit_to_hex(bit, peroid_0, peroid_type)
         peroid_str = (hex(int(peroid_str + zero, 2)).split("0x")[1].split("L")[0])
         peroid_str = ("0" * (data_count * 2 - len(peroid_str)) + peroid_str)
         assert len(peroid_str) == data_count * 2, "peroid_str length error"
-        return peroid_str
+        return peroid_str,index
 
     def start_time(self, date_time, time_zone, lap_distance_setting, iron_group,sec_utc):  # "日期：2017/10/12 09:21:00  时区：32"
         year = int(date_time.split("/")[0])

@@ -63,27 +63,39 @@ def common_get_data(second_0, start_len, Sport_time_set, coros_func, data_dic, s
                     }  # 结构体数据存储的大小为num*mtu
                     """
                     speed=""
-                    heart = coros_func.peroid_t(1, 8, 2, 0, 1, 29) + coros_func.heart(29, num_heart, "heart")
+                    heart,num_heart=coros_func.heart(29, num_heart, "heart")
+                    heart = coros_func.peroid_t(1, 8, 2, 0, 1, 29) + heart
+
                     if sport_type!=3:
                         #speed 2s出值
-                        speed = coros_func.peroid_t(1, 8, 6, 0, 1, 14) + coros_func.pace(14, num_pace, "speed")
+                        speed, num_pace=coros_func.pace(14, num_pace, "speed")
+                        speed = coros_func.peroid_t(1, 8, 6, 0, 1, 14) + speed
                     gps, gps_list, start_len = add_4k_end(gps, heart + speed, start_len, gps_list)
 
                 #5s存储一个值，55s存储一组数据
                 if num % 56 == 0:
                     step,step_len="",""
                     if sport_type != 3 and sport_type != 4:
-                        step = coros_func.peroid_t(1, 4, 0, 0, 1, 11) + coros_func.step_cadence(11, num_step,"step")
-                        step_len = coros_func.peroid_t(1, 4, 1, 0, 1, 11) + coros_func.step_len(11, num_step_len,"step_len")
-                    altitude = coros_func.peroid_t(1, 8, 5, 0, 1, 14) + coros_func.altitude(14, num_altitude,"altitude")
+                        step,num_step = coros_func.step_cadence(11, num_step,"step")
+                        step=coros_func.peroid_t(1, 4, 0, 0, 1, 11) + step
+
+                        step_len, num_step_len=coros_func.step_len(11, num_step_len, "step_len")
+                        step_len = coros_func.peroid_t(1, 4, 1, 0, 1, 11) + step_len
+
+                    altitude, num_altitude=coros_func.altitude(14, num_altitude, "altitude")
+                    altitude = coros_func.peroid_t(1, 8, 5, 0, 1, 14) + altitude
+
                     gps, gps_list, start_len = add_4k_end(gps, step + step_len + altitude, start_len, gps_list)
 
                 # 1s存储一个值，可信度116个，对应心率4组
                 if num % 112 == 0:
-                    trust = coros_func.peroid_t(1, 8, 3, 0, 1, 116) + coros_func.trust_level(116,num_heart_trust,"trust")
+                    trust, num_heart_trust=coros_func.trust_level(116, num_heart_trust, "trust")
+                    trust = coros_func.peroid_t(1, 8, 3, 0, 1, 116) + trust
+
                     gps, gps_list, start_len = add_4k_end(gps, trust, start_len, gps_list)
                 if num % 360 == 0:
-                    kcal = coros_func.peroid_t(1, 4, 4, 0, 1, 6) + coros_func.calories(6, num_kcal, "kcal")
+                    kcal, num_kcal=coros_func.calories(6, num_kcal, "kcal")
+                    kcal = coros_func.peroid_t(1, 4, 4, 0, 1, 6) + kcal
                     gps, gps_list, start_len = add_4k_end(gps,kcal, start_len, gps_list)
                 break
             if num_gps == len(lon_list) - 1:
