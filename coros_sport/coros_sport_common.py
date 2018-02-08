@@ -1,5 +1,7 @@
 # coding:utf-8
+from upload_server.Post_SportData import post_main
 import logging
+import time
 logging.basicConfig(level=logging.ERROR) #DEBUG，INFO，WARNING，ERROR
 
 
@@ -15,7 +17,7 @@ def get_data(iron_group,coros_func,data_dic,second_1,sport_type):
         check_sum=coros_func.check_sum(15, 1, 4, num_index, 99)
         ori_data_all += coros_func.string_4k(15, 1, 4, num_index, check_sum) + ori_data_list[num_index]
         num_index += 1
-    return ori_data_all, utc_second, ori_data_list
+    return ori_data_all, utc_second, ori_data_list,
 
 
 def common_get_data(second_0, start_len, Sport_time_set, coros_func, data_dic, sport_type):
@@ -35,16 +37,14 @@ def common_get_data(second_0, start_len, Sport_time_set, coros_func, data_dic, s
         num += 1
         gps_diff_all = ""
         for j in range(len(lon_list)):
+            if dur_time <= 0:
+                break
             gps_diff = coros_func.gps_diff(0, 1, lon_list[num_gps + 1] - lon_list[num_gps],lat_list[num_gps + 1] - lat_list[num_gps])
-
             gps_diff_all = gps_diff_all + gps_diff
             second_0 += 1
             num_gps += 1
 
-            if dur_time <= 0:
-                break
             if num_gps % 7 == 0:  #每7s写入gps_head
-                second_0 += 1
                 if sport_type==3:  #泳池游泳忽略gps写入
                     gps_head=""
                     gps_diff_all=""
@@ -112,7 +112,8 @@ def common_get_data(second_0, start_len, Sport_time_set, coros_func, data_dic, s
 
 def sport_lap(num, data_dic, coros_func, num_lap, second_0, gps, gps_list, start_len, sport_type):
     lap_info=""
-    if num % ((int(data_dic["Sport_time_set"]) * 60) / int((data_dic["distance0"] / data_dic["around0"]))) < 8:
+    lap_set=(int(data_dic["Sport_time_set"]) * 60) / int((data_dic["distance0"] / data_dic["around0"]))
+    if num % lap_set < 8 and num /lap_set>=1:
         around = coros_func.tag_sport_type(2, 9, sport_type, 4)  # 2:sportinfo_struct ，mtu:4 ,sport_type:0,sport_state：0
         num_lap += 1
         if sport_type == 0:  # 室外跑步
@@ -126,7 +127,6 @@ def sport_lap(num, data_dic, coros_func, num_lap, second_0, gps, gps_list, start
 
         gps, gps_list, start_len=add_4k_end(gps, lap_info, start_len, gps_list)
     return gps, gps_list, start_len, num_lap
-
 
 #运动概要数据
 def sport_summary(coros_func, data_dic, sport_type, gps, start_len, gps_list, second_0, iron_group):
@@ -167,7 +167,6 @@ def sport_summary(coros_func, data_dic, sport_type, gps, start_len, gps_list, se
     gps_list=Triathlon_4k_end(iron_group,gps,gps_list,sport_type,start_len)
     return gps_list, second_0
 
-
 #运动开始信息
 def normal_start_data(coros_func, data_dic, iron_group, sec_utc,sport_type):
     str_4k = coros_func.string_4k(15, 1, 4, 0, 35)
@@ -188,7 +187,6 @@ def normal_start_data(coros_func, data_dic, iron_group, sec_utc,sport_type):
     data = str_4k + start_info0 + start_time + peroid_time0
     return data, len(data)-len(str_4k), second_0
 
-
 #单项运动4k数据长度补全
 def add_4k_end(gps, lap_info, start_len, gps_list):
     gps_len = gps + lap_info
@@ -200,7 +198,6 @@ def add_4k_end(gps, lap_info, start_len, gps_list):
         gps = gps + lap_info
     return gps, gps_list,start_len
 
-
 #铁人三项4k数据长度补全
 def Triathlon_4k_end(iron_group,gps,gps_list,sport_type,start_len):
     if iron_group != 0 and sport_type!=0:
@@ -208,7 +205,6 @@ def Triathlon_4k_end(iron_group,gps,gps_list,sport_type,start_len):
     else:
         gps_list.append(gps)  #解决单项运动最后一段数据小于4k时被丢弃的问题
     return gps_list
-
 
 # 运动结束时填充无效数据(4k补全)，减少工作量
 def none_4k_get(gps,start_len,gps_list):
@@ -223,3 +219,10 @@ def none_4k_get(gps,start_len,gps_list):
             gps_list.append(
                 gps + "%sf" % ('%01x' % ((8184 - len(gps) - start_len) / 8)) + ((8182 - len(gps) - start_len) * "f"))
     return gps_list
+
+#上传服务器，写入app帐号
+def upload_server(*args):  #data,duration,distance,startTime,account,sport_type
+    data=args[0]
+    start_time = int(time.mktime(time.strptime(args[3], "%Y/%m/%d %H:%M:%S")))
+    if args[4]!="":
+        post_main(data,args[5],args[1],args[2]*1000,start_time,start_time+args[1],args[4])

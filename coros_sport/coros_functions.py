@@ -94,7 +94,7 @@ class coros_function(object):
         peroid_0 = []
         #peroid_1 = []
         for i in range(num):
-            if i == number-1:  # number个值存一组
+            if i == number:  # number个值存一组
                 # peroid_1.append(peroid_0)
                 # cadence_0 = []
                 break
@@ -125,13 +125,12 @@ class coros_function(object):
 
         if time_zone < 0:time_zone = 256 - abs(int(time_zone)) * 4  # 解决负时区问题
         else:time_zone = abs(int(time_zone)) * 4
-        if iron_group == 0:
+        if iron_group == 0 or iron_group == 1:
             r_sec = self.yf_time.utc_to_seconds(year - 2000, mon, day, hour, min, sec)  # 十六进制时间戳
             second_0 = self.yf_time.utc_to_seconds(year - 2000, mon, day, hour, min, sec)
         else:
             r_sec = sec_utc
             second_0 = sec_utc
-
         str_start = rever_bytes(self.app_byte_tmp([r_sec, metric_inch, time_zone, lap_distance_setting, iron_group, reverse],self.get_value(sport_start_info_t)))
         assert len(str_start) == 28, "str_start length error"
         return str_start, second_0

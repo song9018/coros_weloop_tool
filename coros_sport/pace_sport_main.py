@@ -44,6 +44,7 @@ def decode_sport_data(data,sport_type):
     gps_file.close()
     sport_file.close()
     gps_list=pace_struct.sport_struct.return_gps_list()
+    pace_struct.sport_struct.lon_lat_list=[]
     return gps_list
 
 def read_sport_data(pstr, mtu, gps_file, sport_file):

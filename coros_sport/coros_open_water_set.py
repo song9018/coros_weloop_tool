@@ -274,6 +274,23 @@ class Ui_Form(object):
         self.open_water_next.setText(QtGui.QApplication.translate("Form", "下一项", None, QtGui.QApplication.UnicodeUTF8))
         self.open_water_next.setObjectName(_fromUtf8("open_water_next"))
 
+        #account输入框
+        self.account = QtGui.QLineEdit(Form)
+        self.account.setGeometry(QtCore.QRect(90, 350, 80, 23))
+        font = QtGui.QFont()
+        font.setFamily(_fromUtf8("宋体"))
+        self.account.setFont(font)
+        self.account.setText(QtGui.QApplication.translate("Form", "", None, QtGui.QApplication.UnicodeUTF8))
+        self.account.setAlignment(QtCore.Qt.AlignCenter)
+        self.account.setObjectName(_fromUtf8("account"))
+        self.account_1 = QtGui.QLabel(Form)
+        self.account_1.setGeometry(QtCore.QRect(30, 350, 60, 21))
+        font = QtGui.QFont()
+        font.setFamily(_fromUtf8("宋体"))
+        self.account_1.setFont(font)
+        self.account_1.setText(QtGui.QApplication.translate("Form", "帐号输入:", None, QtGui.QApplication.UnicodeUTF8))
+        self.account_1.setObjectName(_fromUtf8("account_1"))
+
         self.retranslateUi(Form)
         QtCore.QMetaObject.connectSlotsByName(Form)
 

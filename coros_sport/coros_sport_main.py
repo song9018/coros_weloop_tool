@@ -15,11 +15,10 @@ sys.setdefaultencoding('utf-8')
 
 map_path="./build/handle.html"
 map_path_none="./build/handle_none.html"
-open_water_data=""
-cycle_data=""
-run_data=""
-all_str=""
 
+Sport_time_set=0
+distance=0
+start_time=0
 
 #经纬度数据写入html文件
 class Lat_Lon(object): #list格式：[[113.12122,23.12131,0],[113.12122,23.12131,0]]
@@ -64,8 +63,9 @@ class BrowserScreen(QtWebKit.QWebView):
 class CorosRun(QtGui.QWidget, run_ui_form):
     _translate = QtCore.QCoreApplication.translate
     closeWidget = pyqtSignal()
-    lon_lat_list=[]
-    run_data=""
+    #lon_lat_list=[]
+
+
     def __init__(self,second_utc=0):
         super(CorosRun, self).__init__()
         self.setupUi(self)  # 加载窗体
@@ -101,11 +101,17 @@ class CorosRun(QtGui.QWidget, run_ui_form):
         self.data_dic["avg_speed0"] = int(self.avg_pace.text())
         #轨迹地区获取
         self.data_dic["locus_box_status"]=str(self.locus_box.currentText())
+        self.data_dic["account"] = str(self.account.text())
+
+        CorosRun.distance=self.data_dic["distance0"]
+        CorosRun.Sport_time_set = self.data_dic["Sport_time_set"]
 
     @pyqtSlot()
     def on_commit_clicked(self):#确认按钮
         self.get_ui_data()
         self.__data,second_1,list_gps=get_data(0,self.coros_func,self.data_dic,self.second_utc,sport_type=0)
+        upload_server(self.__data, self.data_dic["Sport_time_set"]*60, self.data_dic["distance0"], self.data_dic["Start_time"],self.data_dic['account'],"跑步")
+
         #数据展示
         self.run_ui = ShowData()
         self.run_ui.show()
@@ -119,8 +125,9 @@ class CorosRun(QtGui.QWidget, run_ui_form):
         self.get_ui_data()
         self.ori_data_all, self.second_utc, self.list_gps= get_data(3,self.coros_func,self.data_dic,self.second_utc,sport_type=0)
         #logging.info(self.ori_data_all)
-        run_data= CorosOpenWater.open_water_data + CorosCycle.cycle_data + self.ori_data_all
 
+        run_data= CorosOpenWater.open_water_data + CorosCycle.cycle_data + self.ori_data_all
+        upload_server(run_data, (CorosRun.Sport_time_set+CorosCycle.Sport_time_set+CorosOpenWater.Sport_time_set)*60, (CorosRun.distance+CorosCycle.distance+CorosOpenWater.distance/1000.0), CorosOpenWater.start_utc,self.data_dic['account'],"铁人三项")
         # 数据展示
         self.run_ui = ShowData()
         self.run_ui.show()
@@ -132,9 +139,8 @@ class CorosRun(QtGui.QWidget, run_ui_form):
 class CorosCycle(QtGui.QWidget, cycle_ui_form):
     _translate = QtCore.QCoreApplication.translate
     closeWidget = pyqtSignal()
-    gps_str = ""
-    cycle_data=""
-    lon_lat_list = []
+    #cycle_data=""
+    #lon_lat_list = []
 
     def __init__(self,second_utc):
         super(CorosCycle, self).__init__()
@@ -172,13 +178,18 @@ class CorosCycle(QtGui.QWidget, cycle_ui_form):
         self.data_dic["avg_speed0"] = int(self.avg_speed.text())
         # 轨迹地区获取
         self.data_dic["locus_box_status"] = str(self.locus_box.currentText())
+        self.data_dic["account"] = str(self.account.text())
 
+        CorosCycle.distance = self.data_dic["distance0"]
+        CorosCycle.Sport_time_set = self.data_dic["Sport_time_set"]
     @pyqtSlot()
     def on_commit_clicked(self):  # 确认按钮
         # 获取运动界面相关数据
         self.get_ui_data()
         self.__data,second_1,list_gps = get_data(0,self.coros_func,self.data_dic,self.second_utc,sport_type=4)
         # 数据展示
+        upload_server(self.__data, self.data_dic["Sport_time_set"]*60, self.data_dic["distance0"], self.data_dic["Start_time"],self.data_dic['account'],"骑行")
+
         self.cycle_ui = ShowData()
         self.cycle_ui.show()
         self.cycle_ui.sport_data.setText(self.__data)
@@ -229,12 +240,14 @@ class CorosPoolSwim(QtGui.QWidget, pool_swim_ui_form):
         self.data_dic["Avg_str_rate"] = int(self.avg_str_rate.text())
         self.data_dic["Most_swolf"] = int(self.most_str_rate.text())
         self.data_dic["Avg_swolf"] = int(self.avg_swolf.text())
-
+        self.data_dic["account"] = str(self.account.text())
     @pyqtSlot()
     def on_commit_clicked(self):  # 确认按钮
         # 获取运动界面相关数据
         self.get_ui_data()
         self.__data, second_utc, ori_list =get_data(0,self.coros_func,self.data_dic,self.second_utc,sport_type=3)
+        #上传服务器
+        upload_server(self.__data, self.data_dic["Sport_time_set"]*60, self.data_dic["distance0"]/1000.0, self.data_dic["Start_time"],self.data_dic['account'],"室内游泳")
         # 数据展示
         self.data_set.setText(self.__data)
         decode_sport_data(self.__data, "poolswim")
@@ -243,8 +256,8 @@ class CorosOpenWater(QtGui.QWidget, open_water_ui_form):
     _translate = QtCore.QCoreApplication.translate
     closeWidget = pyqtSignal()
     gps_str = ""
-    open_water_data = ""
-    lon_lat_list = []
+    #open_water_data = ""
+    #lon_lat_list = []
 
     def __init__(self,second_utc):
         super(CorosOpenWater, self).__init__()
@@ -280,12 +293,18 @@ class CorosOpenWater(QtGui.QWidget, open_water_ui_form):
         self.data_dic["Avg_str_rate"] = int(self.avg_str_rate.text())
         self.data_dic["Most_swolf"] = int(self.most_str_rate.text())
         self.data_dic["Avg_swolf"] = int(self.avg_swolf.text())
+        self.data_dic["account"] = str(self.account.text())
+
+        CorosOpenWater.Sport_time_set=self.data_dic["Sport_time_set"]
+        CorosOpenWater.distance = self.data_dic["distance0"]
+
 
     @pyqtSlot()
     def on_commit_clicked(self):  # 确认按钮
         # 获取运动界面相关数据
         self.get_ui_data()
         self.__data, self.second_utc, list_gps =get_data(0,self.coros_func,self.data_dic,self.second_utc,sport_type=2)
+        upload_server(self.__data, self.data_dic["Sport_time_set"]*60, self.data_dic["distance0"]/1000.0, self.data_dic["Start_time"],self.data_dic['account'],"公开水域")
         # 数据展示
         self.open_water_ui = ShowData()
         self.open_water_ui.show()
@@ -298,6 +317,9 @@ class CorosOpenWater(QtGui.QWidget, open_water_ui_form):
         self.get_ui_data()
         self.ori_data_all, self.second_utc, self.list_gps=get_data(1,self.coros_func,self.data_dic,self.second_utc,sport_type=2)
         CorosOpenWater.open_water_data=self.ori_data_all
+        CorosOpenWater.start_utc = self.data_dic["Start_time"]
+
+
         #logging.info(self.ori_data_all)
         self.coros_cycle1=CorosCycle(self.second_utc + 5)
         self.coros_cycle1.setWindowTitle(u"coros铁人三项--骑行数据")
