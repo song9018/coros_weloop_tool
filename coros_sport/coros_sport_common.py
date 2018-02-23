@@ -2,6 +2,7 @@
 from upload_server.Post_SportData import post_main
 import logging
 import time
+
 logging.basicConfig(level=logging.ERROR) #DEBUG，INFO，WARNING，ERROR
 
 
@@ -18,7 +19,6 @@ def get_data(iron_group,coros_func,data_dic,second_1,sport_type):
         ori_data_all += coros_func.string_4k(15, 1, 4, num_index, check_sum) + ori_data_list[num_index]
         num_index += 1
     return ori_data_all, utc_second, ori_data_list,
-
 
 def common_get_data(second_0, start_len, Sport_time_set, coros_func, data_dic, sport_type):
     gps = ""

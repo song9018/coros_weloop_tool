@@ -2,7 +2,6 @@
 import pymysql
 import json
 import uuid
-from binascii import b2a_hex, a2b_hex
 import SetUUID
 import requests
 '''写个类，用来上传运动数据。
